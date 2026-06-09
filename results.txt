@@ -1,0 +1,61 @@
+singlecode main* 
+❯ uv run evcsp_solver.py 
+======================================================================
+  EVCSP – Minimize Total Tardiness
+  Methods: MILP (PuLP + CBC)  |  Greedy Heuristic  |  GVNS
+======================================================================
+
+Running benchmark (small to medium instances) …
+
+  [loose] n=  10 | Heuristic OK (0.000s) | GVNS OK (0.0s) | MILP OK (0.1s)
+  [tight] n=  10 | Heuristic OK (0.000s) | GVNS OK (0.0s) | MILP OK (0.1s)
+  [loose] n=  30 | Heuristic OK (0.000s) | GVNS OK (0.7s) | MILP OK (5.9s)
+  [tight] n=  30 | Heuristic OK (0.000s) | GVNS OK (1.0s) | MILP OK (31.6s)
+  [loose] n=  50 | Heuristic OK (0.000s) | GVNS OK (5.8s) | MILP OK (120.5s)
+  [tight] n=  50 | Heuristic OK (0.000s) | GVNS OK (9.7s) | MILP OK (120.5s)
+  [loose] n= 100 | Heuristic OK (0.000s) | GVNS OK (70.1s) | MILP OK (121.9s)
+  [tight] n= 100 | Heuristic OK (0.000s) | GVNS OK (69.7s) | MILP OK (121.9s)
+  [loose] n= 200 | Heuristic OK (0.000s) | GVNS OK (814.2s) | MILP skipped (too large)
+  [tight] n= 200 | Heuristic OK (0.001s) | GVNS OK (473.9s) | MILP skipped (too large)
+
+
+======================================================================
+  RESULTS SUMMARY
+======================================================================
+
+── Table A: Total Tardiness & Runtime ──
+ mode  n_evs  M_total_tard  M_runtime_s  H_total_tard  H_runtime_s  G_total_tard  G_runtime_s
+loose     10        0.2166         0.08        0.0000       0.0000        0.0000         0.04
+tight     10        0.7897         0.09        1.0908       0.0000        0.0000         0.04
+loose     30        1.0076         5.86       21.0879       0.0001        0.0000         0.73
+tight     30        2.2676        31.61       34.3045       0.0001        0.0000         0.98
+loose     50       24.7496       120.48      226.4777       0.0001        1.3899         5.85
+tight     50       55.9522       120.47      188.6737       0.0001       11.6279         9.75
+loose    100     1459.7223       121.85      844.3426       0.0003        4.3567        70.10
+tight    100     1221.3719       121.92     1032.7178       0.0003       28.7597        69.72
+loose    200           NaN          NaN     6357.5936       0.0005      530.2056       814.21
+tight    200           NaN          NaN     6510.3339       0.0006      779.1697       473.93
+
+── Table B: Max Tardiness & % Tardy EVs ──
+ mode  n_evs  M_max_tard  M_pct_tardy  H_max_tard  H_pct_tardy  G_max_tard  G_pct_tardy
+loose     10      0.2166        10.00      0.0000          0.0      0.0000          0.0
+tight     10      0.7897        10.00      1.0908         10.0      0.0000          0.0
+loose     30      0.3795        13.33      5.0888         30.0      0.0000          0.0
+tight     30      0.6057        16.67      6.0631         40.0      0.0000          0.0
+loose     50      8.5202        38.00     14.4103         70.0      0.5250         14.0
+tight     50      8.7516        46.00     13.2312         60.0      2.3777         22.0
+loose    100     54.7856        82.00     26.2274         63.0      1.3452         11.0
+tight    100     39.6426        78.00     31.6210         76.0      4.4692         29.0
+loose    200         NaN          NaN     78.7313         87.5     23.5152         57.5
+tight    200         NaN          NaN     69.8070         90.0     23.5366         67.0
+
+── Table C: Optimality Gap GVNS vs MILP (where applicable) ──
+ mode  n_evs      MILP    GVNS   gap_%
+loose     10    0.2166  0.0000 -100.00
+tight     10    0.7897  0.0000 -100.00
+loose     30    1.0076  0.0000 -100.00
+tight     30    2.2676  0.0000 -100.00
+loose     50   24.7496  1.3899  -94.38
+tight     50   55.9522 11.6279  -79.22
+loose    100 1459.7223  4.3567  -99.70
+tight    100 1221.3719 28.7597  -97.65

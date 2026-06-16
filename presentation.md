@@ -1,41 +1,3 @@
----
-marp: true
-theme: default
-paginate: true
-math: mathjax
-style: |
-  section {
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    background-color: #1a1a2e;
-    color: #e0e0f0;
-  }
-  h1, h2, h3 {
-    color: #a0c4ff;
-  }
-  h1 { font-size: 1.6em; }
-  h2 { font-size: 1.3em; border-bottom: 2px solid #4a6fa5; padding-bottom: 6px; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85em;
-  }
-  th {
-    background-color: #4a6fa5;
-    color: white;
-    padding: 6px 10px;
-  }
-  td {
-    padding: 5px 10px;
-    border: 1px solid #444466;
-  }
-  tr:nth-child(even) td { background-color: #252540; }
-  tr:nth-child(odd) td  { background-color: #1e1e38; }
-  code { background: #2a2a4e; padding: 2px 5px; border-radius: 3px; }
-  blockquote { border-left: 4px solid #a0c4ff; padding-left: 12px; color: #b0b0d0; }
-  img { border-radius: 6px; }
-  footer { color: #6677aa; }
----
-
 <!-- ============================================================ -->
 <!--  SLIDE 1 — TITLE                                             -->
 <!-- ============================================================ -->
@@ -44,13 +6,11 @@ style: |
 
 ### Minimising Total Tardiness in Electric-Vehicle Charging Scheduling
 
----
+Mouaad EL Yalaoui, Yassine Chaoui
 
-**[Author Name(s)]**
-**[Course / Module Name] — [Professor Name]**
-**[Institution], June 2026**
+Professeur Elidrissi Abdelhak
 
-> Solved with IBM CPLEX Community Edition v22.2 via `docplex ≥ 2.32.264`
+INPT
 
 ---
 
@@ -64,14 +24,14 @@ style: |
 
 ### Entities & Parameters
 
-| Symbol | Meaning |
-|---|---|
-| $\mathcal{J} = \{1,\dots,n\}$ | Set of EV jobs (charging requests) |
-| $\mathcal{L} = \{0,1,2\}$ | Charger types (11 kW, 22 kW, 43 kW) |
-| $\mathcal{R}_l$ | Set of physical chargers of type $l$ |
-| $r_j = a_j$ | Release (arrival) time of job $j$ |
-| $d_j$ | Due date of job $j$ |
-| $e_j$ | Energy demand (kWh) of job $j$ |
+| Symbol                                          | Meaning                                          |
+| ----------------------------------------------- | ------------------------------------------------ |
+| $\mathcal{J} = \{1,\dots,n\}$                   | Set of EV jobs (charging requests)               |
+| $\mathcal{L} = \{0,1,2\}$                       | Charger types (11 kW, 22 kW, 43 kW)              |
+| $\mathcal{R}_l$                                 | Set of physical chargers of type $l$             |
+| $r_j = a_j$                                     | Release (arrival) time of job $j$                |
+| $d_j$                                           | Due date of job $j$                              |
+| $e_j$                                           | Energy demand (kWh) of job $j$                   |
 | $p_{jl} = \lceil e_j / (\tau \cdot w_l) \rceil$ | Processing time of job $j$ on a type-$l$ charger |
 
 ### Objective
@@ -106,7 +66,7 @@ $$\min \sum_{j \in \mathcal{J}} T_j \quad \text{where} \quad T_j = \max(0,\; C_j
 
 ### Unlu & Mason (2010) — APD Inspiration
 
-- Introduce the *Assignment-and-Positional-Date* (APD) family of MILP formulations for single- and parallel-machine scheduling (**M3 model**)
+- Introduce the _Assignment-and-Positional-Date_ (APD) family of MILP formulations for single- and parallel-machine scheduling (**M3 model**)
 - Replace pairwise sequencing variables with **positional completion-time** variables $c_{rk}$, reducing constraint count growth to $O(nmP)$ (linear in positions $P$)
 - Demonstrated superior LP-relaxation tightness over classical disjunctive formulations for total-tardiness problems
 
@@ -128,13 +88,13 @@ $$\min \sum_{j \in \mathcal{J}} T_j \quad \text{where} \quad T_j = \max(0,\; C_j
 
 ### Decision Variables
 
-| Variable | Type | Meaning |
-|---|---|---|
-| $x_{jlr} \in \{0,1\}$ | Binary | Job $j$ assigned to charger $r$ of type $l$ |
-| $S_j \in \mathbb{Z}_{\geq 0}$ | Integer | Start time of job $j$ |
-| $C_j \in \mathbb{Z}_{\geq 0}$ | Integer | Completion time of job $j$ |
-| $T_j \geq 0$ | Continuous | Tardiness of job $j$ |
-| $\delta_{jklr} \in \{0,1\}$ | Binary | 1 if $j$ precedes $k$ on charger $r$ of type $l$ |
+| Variable                      | Type       | Meaning                                          |
+| ----------------------------- | ---------- | ------------------------------------------------ |
+| $x_{jlr} \in \{0,1\}$         | Binary     | Job $j$ assigned to charger $r$ of type $l$      |
+| $S_j \in \mathbb{Z}_{\geq 0}$ | Integer    | Start time of job $j$                            |
+| $C_j \in \mathbb{Z}_{\geq 0}$ | Integer    | Completion time of job $j$                       |
+| $T_j \geq 0$                  | Continuous | Tardiness of job $j$                             |
+| $\delta_{jklr} \in \{0,1\}$   | Binary     | 1 if $j$ precedes $k$ on charger $r$ of type $l$ |
 
 ### Objective & Key Constraints
 
@@ -164,12 +124,12 @@ $$S_j + p_{jr} x_{jlr} \leq S_k + M(3 - \delta_{jklr} - x_{jlr} - x_{klr}) \quad
 
 ### Decision Variables
 
-| Variable | Type | Meaning |
-|---|---|---|
-| $u_{jlrk} \in \{0,1\}$ | Binary | Job $j$ at position $k$ on charger $r$ of type $l$ |
-| $c_{lrk} \geq 0$ | Continuous | Completion time at position $k$ on charger $r$ (type $l$) |
-| $C_j \geq 0$ | Continuous | Completion time of job $j$ |
-| $T_j \geq 0$ | Continuous | Tardiness of job $j$ |
+| Variable               | Type       | Meaning                                                   |
+| ---------------------- | ---------- | --------------------------------------------------------- |
+| $u_{jlrk} \in \{0,1\}$ | Binary     | Job $j$ at position $k$ on charger $r$ of type $l$        |
+| $c_{lrk} \geq 0$       | Continuous | Completion time at position $k$ on charger $r$ (type $l$) |
+| $C_j \geq 0$           | Continuous | Completion time of job $j$                                |
+| $T_j \geq 0$           | Continuous | Tardiness of job $j$                                      |
 
 ---
 
@@ -209,26 +169,26 @@ $$T_j \geq C_j - d_j \quad \forall j \tag{tardiness}$$
 
 ### Solver & Libraries
 
-| Component | Version |
-|---|---|
-| IBM CPLEX | Community Edition v22.2 |
-| `docplex` | ≥ 2.32.264 |
-| `cplex` (Python binding) | ≥ 22.2.0.0 |
-| Python | ≥ 3.11 |
-| Package manager | `uv` |
+| Component                | Version                 |
+| ------------------------ | ----------------------- |
+| IBM CPLEX                | Community Edition v22.2 |
+| `docplex`                | ≥ 2.32.264              |
+| `cplex` (Python binding) | ≥ 22.2.0.0              |
+| Python                   | ≥ 3.11                  |
+| Package manager          | `uv`                    |
 
-> **CPLEX Community Edition constraint:** hard cap of **1,000 variables** and **1,000 constraints** per model. POS\_MAX = 4 was selected to keep both formulations well within this limit for $n = 10$.
+> **CPLEX Community Edition constraint:** hard cap of **1,000 variables** and **1,000 constraints** per model. POS_MAX = 4 was selected to keep both formulations well within this limit for $n = 10$.
 
 ### Test Instance Parameters
 
-| Parameter | Value |
-|---|---|
-| Number of EVs ($n$) | 10 |
-| Number of chargers ($m$) | 9 |
-| Charger configuration | 4 × 11 kW (L0), 3 × 22 kW (L1), 2 × 43 kW (L2) |
-| Time unit ($\tau$) | 1 slot |
-| BIG-M value | 45 |
-| Position horizon ($P$, APD only) | 4 |
+| Parameter                        | Value                                          |
+| -------------------------------- | ---------------------------------------------- |
+| Number of EVs ($n$)              | 10                                             |
+| Number of chargers ($m$)         | 9                                              |
+| Charger configuration            | 4 × 11 kW (L0), 3 × 22 kW (L1), 2 × 43 kW (L2) |
+| Time unit ($\tau$)               | 1 slot                                         |
+| BIG-M value                      | 45                                             |
+| Position horizon ($P$, APD only) | 4                                              |
 
 ---
 
@@ -268,6 +228,7 @@ $$T_j \geq C_j - d_j \quad \forall j \tag{tardiness}$$
 ![Gantt chart — M3-APD formulation (Total tardiness = 0)](graphs/gantt_m3_apd.png)
 
 **Observations:**
+
 - Both formulations achieve **zero total tardiness** on this instance (all EVs complete before their deadlines)
 - The Iarochen schedule concentrates assignments on faster chargers (L1/L2); the APD schedule distributes load more evenly across positions
 - Position labels ($p1$–$p4$) in the APD Gantt confirm the positional-date structure
@@ -284,13 +245,13 @@ $$T_j \geq C_j - d_j \quad \forall j \tag{tardiness}$$
 
 ### Summary Table ($n = 10$, $m = 9$, $P = 4$)
 
-| Metric | Iarochen et al. | M3-APD |
-|---|---|---|
-| Binary variables | 435 | 360 |
-| Continuous/integer variables | 90 | 56 |
-| **Total variables** | **525** | **416** |
-| **Total constraints** | **850** | **479** |
-| Theoretical growth | $O(n^2 m)$ | $O(nmP)$ |
+| Metric                       | Iarochen et al. | M3-APD   |
+| ---------------------------- | --------------- | -------- |
+| Binary variables             | 435             | 360      |
+| Continuous/integer variables | 90              | 56       |
+| **Total variables**          | **525**         | **416**  |
+| **Total constraints**        | **850**         | **479**  |
+| Theoretical growth           | $O(n^2 m)$      | $O(nmP)$ |
 
 - The M3-APD formulation has **~21% fewer variables** and **~44% fewer constraints** for this instance
 - The CPLEX Community Edition cap of 1,000 is shown as a dashed red line — both formulations remain safely below it at $n = 10$
@@ -307,16 +268,17 @@ $$T_j \geq C_j - d_j \quad \forall j \tag{tardiness}$$
 
 ### Summary Table
 
-| Metric | Iarochen et al. | M3-APD |
-|---|---|---|
-| Solver status | Optimal | Optimal |
-| Total tardiness ($\sum T_j$) | **0.0000** | **0.0000** |
-| Optimality gap | 0% | 0% |
-| CPLEX solve time (s) | **0.0298** | **0.0630** |
-| Variables | 525 | 416 |
-| Constraints | 850 | 479 |
+| Metric                       | Iarochen et al. | M3-APD     |
+| ---------------------------- | --------------- | ---------- |
+| Solver status                | Optimal         | Optimal    |
+| Total tardiness ($\sum T_j$) | **0.0000**      | **0.0000** |
+| Optimality gap               | 0%              | 0%         |
+| CPLEX solve time (s)         | **0.0298**      | **0.0630** |
+| Variables                    | 525             | 416        |
+| Constraints                  | 850             | 479        |
 
 **Key observations:**
+
 - Both formulations prove **global optimality** (zero gap) on the $n = 10$ instance
 - Despite having fewer variables and constraints, the M3-APD formulation requires **~2.1× longer** solve time in this experiment
 - This counter-intuitive result is consistent with known behaviour: the APD continuous $c_{lrk}$ variables admit a weaker LP relaxation for certain instances, requiring more B\&B nodes
@@ -334,9 +296,9 @@ $$T_j \geq C_j - d_j \quad \forall j \tag{tardiness}$$
 ### Crossover Points (CPLEX CE Cap = 1,000)
 
 | Formulation | Variable cap hit at | Constraint cap hit at |
-|---|---|---|
-| Iarochen | $n = 15$ | $n = 11$ |
-| M3-APD | $n = 26$ | $n = 24$ |
+| ----------- | ------------------- | --------------------- |
+| Iarochen    | $n = 15$            | $n = 11$              |
+| M3-APD      | $n = 26$            | $n = 24$              |
 
 - Iarochen's $O(n^2 m)$ constraint growth causes it to hit the Community Edition constraint cap already at $n = 11$; the M3-APD formulation extends feasibility to $n \approx 24$
 - For a commercial (uncapped) CPLEX licence, the difference between $O(n^2 m)$ and $O(nmP)$ becomes decisive as $n$ reaches the hundreds
@@ -352,13 +314,13 @@ $$T_j \geq C_j - d_j \quad \forall j \tag{tardiness}$$
 
 ### Trade-offs
 
-| Dimension | Iarochen et al. | M3-APD |
-|---|---|---|
-| Model size | Larger ($O(n^2 m)$) | Smaller ($O(nmP)$) |
-| Solve time ($n=10$) | Faster (0.030 s) | Slower (0.063 s) |
-| Solution quality | Optimal | Optimal |
-| Scalability | CE cap at $n \approx 11$ | CE cap at $n \approx 24$ |
-| LP relaxation strength | Generally tighter | Depends on instance |
+| Dimension              | Iarochen et al.          | M3-APD                   |
+| ---------------------- | ------------------------ | ------------------------ |
+| Model size             | Larger ($O(n^2 m)$)      | Smaller ($O(nmP)$)       |
+| Solve time ($n=10$)    | Faster (0.030 s)         | Slower (0.063 s)         |
+| Solution quality       | Optimal                  | Optimal                  |
+| Scalability            | CE cap at $n \approx 11$ | CE cap at $n \approx 24$ |
+| LP relaxation strength | Generally tighter        | Depends on instance      |
 
 ### When Does APD Outperform?
 
@@ -388,13 +350,13 @@ $$T_j \geq C_j - d_j \quad \forall j \tag{tardiness}$$
   - The APD formulation uses **~21% fewer variables** and **~44% fewer constraints**
   - APD exhibits superior **theoretical scalability** ($O(nmP)$ vs. $O(n^2 m)$), pushing the CPLEX CE feasibility frontier from $n \approx 11$ to $n \approx 24$
 
-### Future Work
-
-- **Larger test sets:** evaluate both formulations on instances with $n \in \{20, 50, 100\}$ using a full CPLEX licence or open-source MILP solvers (e.g., HiGHS)
-- **Alternative objectives:** adapt the APD formulation for $C_{\max}$, $\sum w_j T_j$, or energy-cost objectives
-- **Decomposition and heuristics:** apply Lagrangian relaxation or column generation to further improve scalability beyond MILP tractability
-- **Dynamic arrival rates:** extend the model to online/rolling-horizon settings representative of real-world EV charging stations
-- **Tighter position bound:** investigate valid inequalities or cutting-plane strategies to strengthen the LP relaxation of the APD model
+<!-- ### Future Work -->
+<!---->
+<!-- - **Larger test sets:** evaluate both formulations on instances with $n \in \{20, 50, 100\}$ using a full CPLEX licence or open-source MILP solvers (e.g., HiGHS) -->
+<!-- - **Alternative objectives:** adapt the APD formulation for $C_{\max}$, $\sum w_j T_j$, or energy-cost objectives -->
+<!-- - **Decomposition and heuristics:** apply Lagrangian relaxation or column generation to further improve scalability beyond MILP tractability -->
+<!-- - **Dynamic arrival rates:** extend the model to online/rolling-horizon settings representative of real-world EV charging stations -->
+<!-- - **Tighter position bound:** investigate valid inequalities or cutting-plane strategies to strengthen the LP relaxation of the APD model -->
 
 ---
 
@@ -404,18 +366,10 @@ $$T_j \geq C_j - d_j \quad \forall j \tag{tardiness}$$
 
 ## References
 
-**[1]** Iarochen, _et al._ (2026). *A Mixed-Integer Linear Programming Model for Electric Vehicle Charging Scheduling with Heterogeneous Charger Types and Release Dates.* [Full journal/conference citation pending verification of PDF metadata.]
+**[1]** Iarochen, _et al._ (2026). _A Mixed-Integer Linear Programming Model for Electric Vehicle Charging Scheduling with Heterogeneous Charger Types and Release Dates._ [Full journal/conference citation pending verification of PDF metadata.]
 
-**[2]** Unlu, Y., & Mason, S. J. (2010). *Evaluation of mixed integer programming formulations for non-preemptive parallel machine scheduling problems.* **Computers & Industrial Engineering**, 58(4), 785–800. https://doi.org/10.1016/j.cie.2010.02.012
+**[2]** Unlu, Y., & Mason, S. J. (2010). _Evaluation of mixed integer programming formulations for non-preemptive parallel machine scheduling problems._ **Computers & Industrial Engineering**, 58(4), 785–800. https://doi.org/10.1016/j.cie.2010.02.012
 
-**[3]** IBM Corporation. (2022). *IBM ILOG CPLEX Optimization Studio v22.2: User's Manual.* Armonk, NY: IBM Corp.
+**[3]** IBM Corporation. (2022). _IBM ILOG CPLEX Optimization Studio v22.2: User's Manual._ Armonk, NY: IBM Corp.
 
-**[4]** docplex contributors. (2024). *IBM Decision Optimization CPLEX Modeling for Python (DOcplex) v2.32.* https://ibmdecisionoptimization.github.io/docplex-doc/
-
----
-
-> Slides generated with **Marp** — render with:
-> ```
-> marp presentation.md -o presentation.pdf
-> ```
-> All graphs produced by `generate_graphs.py` using live IBM CPLEX solve results.
+**[4]** docplex contributors. (2024). _IBM Decision Optimization CPLEX Modeling for Python (DOcplex) v2.32._ https://ibmdecisionoptimization.github.io/docplex-doc/

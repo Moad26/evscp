@@ -2,7 +2,7 @@
 #import "@preview/mitex:0.2.6": mitex
 
 // Configure the document as a presentation
-#set page(paper: "presentation-16-9", margin: 2em)
+#set page(paper: "presentation-16-9", margin: 1em)
 #set text(size: 20pt)
 
 // Give tables more padding so math fractions don't hit the borders

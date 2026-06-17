@@ -26,16 +26,16 @@ INPT
 
 Consider a charging station with $K$ charger types. For each type $l \in \mathcal{L} = \{1,\dots,K\}$, $m_l$ identical chargers of power $w_l$ (kW) are available, with $\sum_l m_l = m$ total chargers.
 
-| Symbol | Meaning |
-| --- | --- |
-| $\mathcal{J} = \{1,\dots,n\}$ | Set of $n$ EV charging requests (jobs) |
-| $\mathcal{L} = \{1,\dots,K\}$ | Set of $K$ charger types, each with power $w_l$ (kW) |
-| $\mathcal{R}_l$ | Set of $m_l$ individual chargers of type $l$ |
-| $a_j$ | Arrival (release) time of job $j$ |
-| $d_j$ | Desired departure (due) time of job $j$ |
-| $e_j$ | Energy demand (kWh) of job $j$ |
-| $\tau$ | Duration of one time slot (hours) |
-| $p_{jl} = \lceil e_j / (\tau \cdot w_l) \rceil$ | Processing time of job $j$ on a type-$l$ charger |
+| Symbol                                          | Meaning                                              |
+| ----------------------------------------------- | ---------------------------------------------------- |
+| $\mathcal{J} = \{1,\dots,n\}$                   | Set of $n$ EV charging requests (jobs)               |
+| $\mathcal{L} = \{1,\dots,K\}$                   | Set of $K$ charger types, each with power $w_l$ (kW) |
+| $\mathcal{R}_l$                                 | Set of $m_l$ individual chargers of type $l$         |
+| $a_j$                                           | Arrival (release) time of job $j$                    |
+| $d_j$                                           | Desired departure (due) time of job $j$              |
+| $e_j$                                           | Energy demand (kWh) of job $j$                       |
+| $\tau$                                          | Duration of one time slot (hours)                    |
+| $p_{jl} = \lceil e_j / (\tau \cdot w_l) \rceil$ | Processing time of job $j$ on a type-$l$ charger     |
 
 > Processing times depend on **both** the job and the charger type, placing this problem in the **unrelated parallel machine** class ($R_m$).
 
@@ -105,13 +105,13 @@ $$\min \sum_{j \in \mathcal{J}} T_j \quad \text{where} \quad T_j = \max\bigl(0,\
 
 $$\min \sum_j T_j$$
 
-$$\sum_{l \in \mathcal{L}} \sum_{r \in \mathcal{R}_l} x_{jlr} = 1 \quad \forall j \tag{assignment}$$
+$$\sum_{l \in \mathcal{L}} \sum_{r \in \mathcal{R}_l} x_{jlr} = 1 \quad \forall j \qquad (\text{assignment})$$
 
-$$S_j \geq a_j \quad \forall j \tag{release date}$$
+$$S_j \geq a_j \quad \forall j \qquad (\text{release date})$$
 
-$$C_j = S_j + \sum_l \sum_{r \in \mathcal{R}_l} p_{jr} \cdot x_{jlr} \quad \forall j \tag{completion}$$
+$$C_j = S_j + \sum_l \sum_{r \in \mathcal{R}_l} p_{jr} \cdot x_{jlr} \quad \forall j \qquad (\text{completion})$$
 
-$$S_j + p_{jr} x_{jlr} \leq S_k + M(3 - \delta_{jklr} - x_{jlr} - x_{klr}) \quad \forall j < k, l, r \tag{sequencing}$$
+$$S_j + p_{jr} x_{jlr} \leq S_k + M(3 - \delta_{jklr} - x_{jlr} - x_{klr}) \quad \forall j < k, l, r \qquad (\text{sequencing})$$
 
 - **Complexity:** $O(n^2 m)$ binary variables and constraints — **quadratic scaling**
 
@@ -144,25 +144,21 @@ $$\min \sum_{j \in \mathcal{J}} T_j$$
 
 ### Constraints (adapted from Unlu & Mason 2010, Eqs. 16–21)
 
-$$\sum_{l} \sum_{r \in \mathcal{R}_l} \sum_{k \in \mathcal{K}} u_{jlrk} = 1 \quad \forall j \tag{16: assignment}$$
+$$\sum_{l} \sum_{r \in \mathcal{R}_l} \sum_{k \in \mathcal{K}} u_{jlrk} = 1 \quad \forall j \qquad (1)$$
 
-$$\sum_{j \in \mathcal{J}} u_{jlrk} \leq 1 \quad \forall l, r, k \tag{17: slot capacity}$$
+$$\sum_{j \in \mathcal{J}} u_{jlrk} \leq 1 \quad \forall l, r, k \qquad (2)$$
 
-$$c_{lr1} \geq \sum_{j} (a_j + p_{jl})\, u_{jlr1} \quad \forall l, r \tag{21$\to$18: first-position release}$$
+$$c_{lr1} \geq \sum_{j} (a_j + p_{jl})\, u_{jlr1} \quad \forall l, r \qquad (3)$$
 
-$$c_{lrk} \geq c_{lr,k-1} + \sum_{j} p_{jl}\, u_{jlrk} \quad \forall l, r, k > 1 \tag{19: chain}$$
+$$c_{lrk} \geq c_{lr,k-1} + \sum_{j} p_{jl}\, u_{jlrk} \quad \forall l, r, k > 1 \qquad (4)$$
 
-$$c_{lrk} \geq \sum_{j} (a_j + p_{jl})\, u_{jlrk} \quad \forall l, r, k > 1 \tag{21: release date}$$
+$$c_{lrk} \geq \sum_{j} (a_j + p_{jl})\, u_{jlrk} \quad \forall l, r, k > 1 \qquad (5)$$
 
-$$C_j \geq c_{lrk} - M(1 - u_{jlrk}) \quad \forall j, l, r, k \tag{20: link}$$
+$$C_j \geq c_{lrk} - M(1 - u_{jlrk}) \quad \forall j, l, r, k \qquad (6)$$
 
-$$T_j \geq C_j - d_j \quad \forall j \tag{tardiness}$$
+$$T_j \geq C_j - d_j \quad \forall j \qquad (7)$$
 
-### Model Size (as functions of $n$, $m$, $P$)
-
-- **Variables:** $nmP + mP + 2n$ — grows as $O(nmP)$
-- **Constraints:** $n + mP + m(P{-}1) + m(P{-}1) + nmP + n$ — grows as $O(nmP)$
-- **No pairwise terms** → avoids the $O(n^2)$ bottleneck of Iarochen
+Constraints (1) ensure each EV is assigned to exactly one (charger type, charger, slot position) combination. Constraints (2) respect slot capacity, permitting at most one vehicle per position slot. Constraints (3) and (5) prevent charging from starting before vehicle arrival for the first slot ($k=1$) and subsequent slots ($k>1$) respectively. Constraints (4) chain consecutive slots chronologically, building the timeline and replacing quadratic big-$M$ sequencing variables. Linkage constraints (6) extract positional slot completion times to job completion times $C_j$ using big-$M$ activation. Finally, constraints (7) linearize tardiness $T_j = \max(0, C_j - d_j)$ for the objective function.
 
 ---
 
@@ -176,14 +172,14 @@ All algorithms were implemented in **Python (≥ 3.11)** and executed on a lapto
 
 ### Hardware & Software Environment
 
-| Component | Specification |
-| --- | --- |
-| Processor | Intel Core i9-14900HX (24 cores, up to 5.8 GHz) |
-| Memory | 32 GB DDR5 |
-| MILP Solver | IBM CPLEX Community Edition v22.2 |
-| Modelling API | `docplex` v2.32.264 |
-| Language | Python 3.11, package manager `uv` |
-| OS | Linux |
+| Component     | Specification                                   |
+| ------------- | ----------------------------------------------- |
+| Processor     | Intel Core i9-14900HX (24 cores, up to 5.8 GHz) |
+| Memory        | 32 GB DDR5                                      |
+| MILP Solver   | IBM CPLEX Community Edition v22.2               |
+| Modelling API | `docplex` v2.32.264                             |
+| Language      | Python 3.11, package manager `uv`               |
+| OS            | Endevor Os ( Linux )                            |
 
 > **CPLEX Community Edition limit:** hard cap of **1,000 variables** and **1,000 constraints** per model. The position horizon $P = 4$ was selected to keep both formulations within this limit for the test instance.
 
@@ -193,16 +189,16 @@ All algorithms were implemented in **Python (≥ 3.11)** and executed on a lapto
 
 A single representative instance is used to compare the two formulations. The station comprises **$K = 3$ charger types** arranged across **$m = 9$** physical chargers, serving **$n = 10$** EV charging requests.
 
-| Parameter | Value |
-| --- | --- |
-| Number of EVs ($n$) | 10 |
-| Number of charger types ($K$) | 3 |
-| Total chargers ($m$) | 9 |
-| Charger configuration | $m_0 = 4$, $m_1 = 3$, $m_2 = 2$ |
-| Charger powers ($w_l$, kW) | $w_0 = 11$, $w_1 = 22$, $w_2 = 43$ |
-| Time slot duration ($\tau$) | 1 h |
-| Big-$M$ bound | 45 |
-| Position horizon ($P$, M3-APD only) | 4 |
+| Parameter                           | Value                              |
+| ----------------------------------- | ---------------------------------- |
+| Number of EVs ($n$)                 | 10                                 |
+| Number of charger types ($K$)       | 3                                  |
+| Total chargers ($m$)                | 9                                  |
+| Charger configuration               | $m_0 = 4$, $m_1 = 3$, $m_2 = 2$    |
+| Charger powers ($w_l$, kW)          | $w_0 = 11$, $w_1 = 22$, $w_2 = 43$ |
+| Time slot duration ($\tau$)         | 1 h                                |
+| Big-$M$ bound                       | 45                                 |
+| Position horizon ($P$, M3-APD only) | 4                                  |
 
 Arrival times $a_j$ and due dates $d_j$ were set to yield a mix of tight and loose time windows, while energy demands $e_j$ were drawn to produce processing-time ratios that vary markedly across charger types, reflecting the unrelated-machine structure of the problem.
 

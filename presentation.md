@@ -24,23 +24,28 @@ INPT
 
 ### Entities & Parameters
 
-| Symbol                                          | Meaning                                          |
-| ----------------------------------------------- | ------------------------------------------------ |
-| $\mathcal{J} = \{1,\dots,n\}$                   | Set of EV jobs (charging requests)               |
-| $\mathcal{L} = \{0,1,2\}$                       | Charger types (11 kW, 22 kW, 43 kW)              |
-| $\mathcal{R}_l$                                 | Set of physical chargers of type $l$             |
-| $r_j = a_j$                                     | Release (arrival) time of job $j$                |
-| $d_j$                                           | Due date of job $j$                              |
-| $e_j$                                           | Energy demand (kWh) of job $j$                   |
+Consider a charging station with $K$ charger types. For each type $l \in \mathcal{L} = \{1,\dots,K\}$, $m_l$ identical chargers of power $w_l$ (kW) are available, with $\sum_l m_l = m$ total chargers.
+
+| Symbol | Meaning |
+| --- | --- |
+| $\mathcal{J} = \{1,\dots,n\}$ | Set of $n$ EV charging requests (jobs) |
+| $\mathcal{L} = \{1,\dots,K\}$ | Set of $K$ charger types, each with power $w_l$ (kW) |
+| $\mathcal{R}_l$ | Set of $m_l$ individual chargers of type $l$ |
+| $a_j$ | Arrival (release) time of job $j$ |
+| $d_j$ | Desired departure (due) time of job $j$ |
+| $e_j$ | Energy demand (kWh) of job $j$ |
+| $\tau$ | Duration of one time slot (hours) |
 | $p_{jl} = \lceil e_j / (\tau \cdot w_l) \rceil$ | Processing time of job $j$ on a type-$l$ charger |
+
+> Processing times depend on **both** the job and the charger type, placing this problem in the **unrelated parallel machine** class ($R_m$).
 
 ### Objective
 
-$$\min \sum_{j \in \mathcal{J}} T_j \quad \text{where} \quad T_j = \max(0,\; C_j - d_j)$$
+$$\min \sum_{j \in \mathcal{J}} T_j \quad \text{where} \quad T_j = \max\bigl(0,\; C_j - d_j\bigr)$$
 
-- Each EV must be assigned to **exactly one** charger for its entire charging session
-- No two EVs may occupy the **same charger simultaneously**
-- Charging may not begin before the EV arrives: $S_j \geq a_j$
+- Each job must be assigned to **exactly one** charger (non-preemptive)
+- No two jobs may share the **same charger** at any time instant
+- Charging may not begin before the vehicle arrives: $S_j \geq a_j$
 
 ---
 
@@ -162,33 +167,44 @@ $$T_j \geq C_j - d_j \quad \forall j \tag{tardiness}$$
 ---
 
 <!-- ============================================================ -->
-<!--  SLIDE 6 — COMPUTATIONAL SETUP                               -->
+<!--  SLIDE 6 — COMPUTATIONAL EXPERIMENTS                         -->
 <!-- ============================================================ -->
 
-## Computational Setup
+## Computational Experiments
 
-### Solver & Libraries
+All algorithms were implemented in **Python (≥ 3.11)** and executed on a laptop equipped with an **Intel Core i9-14900HX** processor and **32 GB of RAM**. Both MILP formulations were solved using **IBM ILOG CPLEX** (Community Edition v22.2) via the `docplex` modelling API (v2.32.264), with default solver settings and no imposed time limit for the test instance.
 
-| Component                | Version                 |
-| ------------------------ | ----------------------- |
-| IBM CPLEX                | Community Edition v22.2 |
-| `docplex`                | ≥ 2.32.264              |
-| `cplex` (Python binding) | ≥ 22.2.0.0              |
-| Python                   | ≥ 3.11                  |
-| Package manager          | `uv`                    |
+### Hardware & Software Environment
 
-> **CPLEX Community Edition constraint:** hard cap of **1,000 variables** and **1,000 constraints** per model. POS_MAX = 4 was selected to keep both formulations well within this limit for $n = 10$.
+| Component | Specification |
+| --- | --- |
+| Processor | Intel Core i9-14900HX (24 cores, up to 5.8 GHz) |
+| Memory | 32 GB DDR5 |
+| MILP Solver | IBM CPLEX Community Edition v22.2 |
+| Modelling API | `docplex` v2.32.264 |
+| Language | Python 3.11, package manager `uv` |
+| OS | Linux |
 
-### Test Instance Parameters
+> **CPLEX Community Edition limit:** hard cap of **1,000 variables** and **1,000 constraints** per model. The position horizon $P = 4$ was selected to keep both formulations within this limit for the test instance.
 
-| Parameter                        | Value                                          |
-| -------------------------------- | ---------------------------------------------- |
-| Number of EVs ($n$)              | 10                                             |
-| Number of chargers ($m$)         | 9                                              |
-| Charger configuration            | 4 × 11 kW (L0), 3 × 22 kW (L1), 2 × 43 kW (L2) |
-| Time unit ($\tau$)               | 1 slot                                         |
-| BIG-M value                      | 45                                             |
-| Position horizon ($P$, APD only) | 4                                              |
+---
+
+### Test Instance
+
+A single representative instance is used to compare the two formulations. The station comprises **$K = 3$ charger types** arranged across **$m = 9$** physical chargers, serving **$n = 10$** EV charging requests.
+
+| Parameter | Value |
+| --- | --- |
+| Number of EVs ($n$) | 10 |
+| Number of charger types ($K$) | 3 |
+| Total chargers ($m$) | 9 |
+| Charger configuration | $m_0 = 4$, $m_1 = 3$, $m_2 = 2$ |
+| Charger powers ($w_l$, kW) | $w_0 = 11$, $w_1 = 22$, $w_2 = 43$ |
+| Time slot duration ($\tau$) | 1 h |
+| Big-$M$ bound | 45 |
+| Position horizon ($P$, M3-APD only) | 4 |
+
+Arrival times $a_j$ and due dates $d_j$ were set to yield a mix of tight and loose time windows, while energy demands $e_j$ were drawn to produce processing-time ratios that vary markedly across charger types, reflecting the unrelated-machine structure of the problem.
 
 ---
 
